@@ -1,0 +1,343 @@
+
+# Java Multithreading — 3 Threads
+
+## 1. Folder Structure
+
+Keep all four files inside the same folder:
+
+```text
+MultiThreading/
+├── MainThread.java
+├── Thread1.java
+├── Thread2.java
+└── Thread3.java
+```
+
+For this simple example, **do not use a package declaration** such as:
+
+```java
+package Thread;
+```
+
+---
+
+## 2. MainThread.java
+
+```java
+public class MainThread {
+    public static void main(String[] args) {
+
+        Thread1 ob = new Thread1();
+        Thread2 ob1 = new Thread2();
+        Thread3 ob2 = new Thread3();
+
+        ob.start();
+        ob1.start();
+        ob2.start();
+    }
+}
+```
+
+`start()` creates/starts the threads and invokes their `run()` methods.
+
+---
+
+## 3. Thread1.java
+
+```java
+public class Thread1 extends Thread {
+
+    public void run() {
+        for (int i = 1; i <= 10; i++) {
+
+            System.out.println("Thread1 " + i);
+
+            try {
+                sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+
+`Thread2.java` and `Thread3.java` are the same, with their respective class names and output.
+
+---
+
+# Important Commands
+
+### Check your current location
+
+```bash
+pwd
+```
+
+Example:
+
+```text
+/home/nireeksha-a-p/IOT-AUG/MultiThreading
+```
+
+### List files
+
+```bash
+ls
+```
+
+Detailed listing:
+
+```bash
+ls -l
+```
+
+List only Java files:
+
+```bash
+ls -l *.java
+```
+
+---
+
+## Check class names inside files
+
+This was particularly useful for finding the original problem:
+
+```bash
+grep -H "class " *.java
+```
+
+Expected:
+
+```text
+MainThread.java:public class MainThread
+Thread1.java:public class Thread1 extends Thread
+Thread2.java:public class Thread2 extends Thread
+Thread3.java:public class Thread3 extends Thread
+```
+
+**Rule:** A public class name must match its filename.
+
+```text
+Thread1.java → public class Thread1
+Thread2.java → public class Thread2
+```
+
+---
+
+## Check the first line of every Java file
+
+```bash
+head -1 *.java
+```
+
+Useful for checking whether a `package` declaration exists.
+
+---
+
+## Remove the package declaration
+
+If you accidentally have:
+
+```java
+package Thread;
+```
+
+and don't want to use packages:
+
+```bash
+sed -i '/^package Thread;/d' *.java
+```
+
+This removes the line:
+
+```java
+package Thread;
+```
+
+from all `.java` files.
+
+---
+
+## Delete compiled `.class` files
+
+```bash
+rm -f *.class
+```
+
+Useful when you want to start compilation fresh.
+
+---
+
+# Compile
+
+From inside the `MultiThreading` folder:
+
+```bash
+javac *.java
+```
+
+Or explicitly:
+
+```bash
+javac MainThread.java Thread1.java Thread2.java Thread3.java
+```
+
+If there are no errors, `.class` files will be generated.
+
+Check them with:
+
+```bash
+ls -l *.class
+```
+
+---
+
+# Run
+
+```bash
+java MainThread
+```
+
+**Don't use:**
+
+```bash
+java MainThread.java
+```
+
+for this compiled setup, and don't use:
+
+```bash
+java Thread.MainThread
+```
+
+because we're not using a package.
+
+---
+
+# Expected Output
+
+The order can change every time:
+
+```text
+Thread1 1
+Thread3 1
+Thread2 1
+Thread2 2
+Thread1 2
+Thread3 2
+...
+```
+
+Another execution might be:
+
+```text
+Thread3 1
+Thread2 1
+Thread1 1
+Thread3 2
+Thread2 2
+Thread1 2
+...
+```
+
+This is **normal** because the three threads execute concurrently and the thread scheduler determines their execution order.
+
+---
+
+# Quick Troubleshooting
+
+### If you get `cannot find symbol: Thread1`
+
+Check:
+
+```bash
+grep -H "class " *.java
+```
+
+Make sure:
+
+```text
+Thread1.java → Thread1
+Thread2.java → Thread2
+Thread3.java → Thread3
+```
+
+### If you get `class ABCD is public, should be declared in a file named ABCD.java`
+
+Your class name and filename don't match.
+
+For example:
+
+```text
+MainThread.java
+public class ABCD
+```
+
+❌ Wrong.
+
+It should be:
+
+```text
+MainThread.java
+public class MainThread
+```
+
+### If `*.java` says "No such file"
+
+Check where you are:
+
+```bash
+pwd
+```
+
+Then:
+
+```bash
+ls
+```
+
+Go to the correct folder:
+
+```bash
+cd ~/IOT-AUG/MultiThreading
+```
+
+---
+
+## 🔄 Complete workflow
+
+When creating/running the program from scratch:
+
+```bash
+cd ~/IOT-AUG/MultiThreading
+
+ls -l *.java
+
+grep -H "class " *.java
+
+head -1 *.java
+
+rm -f *.class
+
+javac *.java
+
+java MainThread
+```
+
+If you accidentally added the package:
+
+```bash
+sed -i '/^package Thread;/d' *.java
+```
+
+Then:
+
+```bash
+rm -f *.class
+javac *.java
+java MainThread
+```
+
+**Main concept to remember:** `start()` starts each thread, `run()` contains the thread's task, and the execution order of multiple threads is **not guaranteed**.
