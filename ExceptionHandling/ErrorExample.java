@@ -1,4 +1,4 @@
-package Thrusday;
+
 import java.util.*;
 public class ErrorExample 
 {
